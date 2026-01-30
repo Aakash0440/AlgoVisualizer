@@ -16,38 +16,41 @@ export class AlgorithmEngine {
   protected addStep(
     action: string,
     data?: Record<string, any>,
-    description?: string
+    description?: string,
+    codeLine?: number,
+    swapped?: boolean
   ): void {
-    this.steps.push({ action, data, description });
+    this.steps.push({ action, data, description, codeLine, swapped });
   }
 
   // Helper to add comparison step
   protected addComparison(
     indices: number[],
     values: number[],
-    description?: string
+    description?: string,
+    codeLine?: number
   ): void {
-    this.addStep('compare', { indices, values }, description);
+    this.addStep('compare', { indices, values }, description, codeLine);
   }
 
   // Helper to add swap step
-  protected addSwap(indices: number[], values: number[]): void {
-    this.addStep('swap', { indices, values });
+  protected addSwap(indices: number[], values: number[], codeLine?: number): void {
+    this.addStep('swap', { indices, values }, undefined, codeLine, true);
   }
 
   // Helper to add visited step
-  protected addVisited(index: number, values: number[]): void {
-    this.addStep('visited', { index, values });
+  protected addVisited(index: number, values: number[], codeLine?: number): void {
+    this.addStep('visited', { index, values }, undefined, codeLine);
   }
 
   // Helper to add sorted step
-  protected addSorted(index: number, values: number[]): void {
-    this.addStep('sorted', { index, values });
+  protected addSorted(index: number, values: number[], codeLine?: number): void {
+    this.addStep('sorted', { index, values }, undefined, codeLine);
   }
 
   // Helper to mark entire array as sorted
-  protected markComplete(values: number[], message?: string): void {
-    this.addStep('complete', { values }, message || 'Array sorted!');
+  protected markComplete(values: number[], message?: string, codeLine?: number): void {
+    this.addStep('complete', { values }, message || 'Array sorted!', codeLine);
   }
 }
 

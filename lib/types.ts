@@ -3,6 +3,10 @@ export interface AlgorithmStep {
   action: string;
   data?: Record<string, any>;
   description?: string;
+  /** Line number in algorithm code (1-based) for code pane highlight */
+  codeLine?: number;
+  /** Whether this step involved a swap (for quiz mode) */
+  swapped?: boolean;
 }
 
 // Array-based algorithm state

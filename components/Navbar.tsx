@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Home, Zap, BookOpen } from 'lucide-react';
+import { ChevronDown, Home, Zap, BookOpen, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function Navbar() {
@@ -55,6 +55,13 @@ export function Navbar() {
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
             >
               DP
+            </Link>
+            <Link
+              href="/?mode=interview"
+              className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
+            >
+              <Briefcase className="w-4 h-4" />
+              Interview Prep
             </Link>
           </div>
 
@@ -113,6 +120,13 @@ export function Navbar() {
               onClick={() => setIsOpen(false)}
             >
               String Matching
+            </Link>
+            <Link
+              href="/?mode=interview"
+              className="block px-4 py-2 rounded-lg hover:bg-secondary/50 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Interview Prep
             </Link>
           </div>
         )}

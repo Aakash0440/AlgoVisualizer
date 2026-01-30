@@ -2,19 +2,24 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, FastForward } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw } from 'lucide-react';
+import { SpeedControl } from '@/components/SpeedControl';
 
 interface VisualizationControlsProps {
   isPlaying: boolean;
   currentStep: number;
   totalSteps: number;
-  speed: number;
+  /** Speed multiplier (0.25, 0.5, 1, 2) - used when speedMs not provided */
+  speed?: number;
+  /** Speed in milliseconds per step (100-3000). When set, shows slider + presets. */
+  speedMs?: number;
   onPlay: () => void;
   onPause: () => void;
   onReset: () => void;
   onStepForward: () => void;
   onStepBackward: () => void;
-  onSpeedChange: (speed: number) => void;
+  onSpeedChange?: (speed: number) => void;
+  onSpeedMsChange?: (speedMs: number) => void;
   stepDescription?: string;
 }
 
@@ -22,16 +27,20 @@ export function VisualizationControls({
   isPlaying,
   currentStep,
   totalSteps,
-  speed,
+  speed = 1,
+  speedMs,
   onPlay,
   onPause,
   onReset,
   onStepForward,
   onStepBackward,
   onSpeedChange,
+  onSpeedMsChange,
   stepDescription,
 }: VisualizationControlsProps) {
   const progress = totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0;
+  const useMsSpeed = speedMs !== undefined && onSpeedMsChange !== undefined;
+  const speedLabel = useMsSpeed && speedMs ? `${(1000 / speedMs).toFixed(1)}x` : `${speed}x`;
 
   return (
     <div className="w-full space-y-6 bg-gradient-to-br from-card to-card/50 p-6 rounded-xl border border-border/50 shadow-sm">
@@ -123,29 +132,36 @@ export function VisualizationControls({
 
         <div className="flex gap-2 items-center justify-end">
           <span className="text-xs text-muted-foreground font-semibold">Speed:</span>
-          <span className="font-mono font-bold text-primary">{speed}x</span>
+          <span className="font-mono font-bold text-primary">{speedLabel}</span>
         </div>
       </div>
 
-      {/* Speed Controls */}
-      <div className="grid grid-cols-4 gap-2">
-        {[0.25, 0.5, 1, 2].map((s) => (
-          <Button
-            key={s}
-            variant={speed === s ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => onSpeedChange(s)}
-            className={`text-xs font-semibold transition-all ${
-              speed === s
-                ? 'bg-gradient-to-r from-primary to-accent text-white'
-                : 'hover:bg-primary/5'
-            }`}
-            title={`Set speed to ${s}x`}
-          >
-            {s}x
-          </Button>
-        ))}
-      </div>
+      {/* Speed Controls: slider + presets when speedMs provided, else preset buttons */}
+      {useMsSpeed ? (
+        <SpeedControl
+          value={speedMs}
+          onChange={onSpeedMsChange}
+        />
+      ) : (
+        <div className="grid grid-cols-4 gap-2">
+          {[0.25, 0.5, 1, 2].map((s) => (
+            <Button
+              key={s}
+              variant={speed === s ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => onSpeedChange?.(s)}
+              className={`text-xs font-semibold transition-all ${
+                speed === s
+                  ? 'bg-gradient-to-r from-primary to-accent text-white'
+                  : 'hover:bg-primary/5'
+              }`}
+              title={`Set speed to ${s}x`}
+            >
+              {s}x
+            </Button>
+          ))}
+        </div>
+      )}
 
       {/* Step Description */}
       {stepDescription && (

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { VisualizationControls } from './visualizers/VisualizationControls';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getStoredSpeed } from '@/components/SpeedControl';
 import type { AlgorithmStep, GraphNode, GraphEdge } from '@/lib/types';
 
 interface GraphVisualizerProps {
@@ -40,7 +41,10 @@ export function GraphVisualizer({
   const [steps, setSteps] = useState<AlgorithmStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speedMs, setSpeedMs] = useState(1000);
+  useEffect(() => {
+    setSpeedMs(getStoredSpeed());
+  }, []);
 
   const [visitedNodes, setVisitedNodes] = useState<string[]>([]);
   const [activeNode, setActiveNode] = useState<string | null>(null);
@@ -98,16 +102,16 @@ export function GraphVisualizer({
     }
   }, [currentStep, steps]);
 
-  // Auto-play effect
+  // Auto-play effect (speed in ms per step)
   useEffect(() => {
     if (!isPlaying || currentStep >= steps.length) return;
 
-    const interval = setTimeout(() => {
+    const timer = setTimeout(() => {
       setCurrentStep((prev) => Math.min(prev + 1, steps.length));
-    }, 500 / speed);
+    }, speedMs);
 
-    return () => clearTimeout(interval);
-  }, [isPlaying, currentStep, steps.length, speed]);
+    return () => clearTimeout(timer);
+  }, [isPlaying, currentStep, steps.length, speedMs]);
 
   const handleReset = useCallback(() => {
     setCurrentStep(0);
@@ -206,7 +210,15 @@ export function GraphVisualizer({
             isPlaying={isPlaying}
             currentStep={currentStep}
             totalSteps={steps.length}
-            speed={speed}
+            speedMs={speedMs}
+            onSpeedMsChange={(ms) => {
+              setSpeedMs(ms);
+              try {
+                localStorage.setItem('dsa-visualizer-speed-ms', String(ms));
+              } catch {
+                // ignore
+              }
+            }}
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
             onReset={handleReset}
@@ -214,7 +226,6 @@ export function GraphVisualizer({
               setCurrentStep((prev) => Math.min(prev + 1, steps.length))
             }
             onStepBackward={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
-            onSpeedChange={setSpeed}
             stepDescription={stepDescription}
           />
         </CardContent>

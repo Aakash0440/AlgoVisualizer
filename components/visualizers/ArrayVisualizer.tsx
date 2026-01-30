@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 
 interface ArrayVisualizerProps {
   values: number[];
@@ -11,7 +11,7 @@ interface ArrayVisualizerProps {
   maxValue?: number;
 }
 
-export function ArrayVisualizer({
+function ArrayVisualizerInner({
   values,
   comparing = [],
   compared = [],
@@ -65,3 +65,5 @@ export function ArrayVisualizer({
     </div>
   );
 }
+
+export const ArrayVisualizer = memo(ArrayVisualizerInner);

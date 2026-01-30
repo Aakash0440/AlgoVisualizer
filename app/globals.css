@@ -135,3 +135,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* DSA Visualizer: code pane active line & quiz */
+.dsa-active-line {
+  background: color-mix(in oklch, var(--primary) 20%, transparent);
+  border-left: 3px solid var(--primary);
+  animation: dsa-line-pulse 1.5s ease-in-out infinite;
+}
+@keyframes dsa-line-pulse {
+  0%, 100% { background: color-mix(in oklch, var(--primary) 20%, transparent); }
+  50% { background: color-mix(in oklch, var(--primary) 40%, transparent); }
+}
+.quiz-option-correct {
+  border-color: oklch(0.55 0.18 160) !important;
+  background: color-mix(in oklch, oklch(0.55 0.18 160) 15%, transparent) !important;
+}
+.quiz-option-incorrect {
+  border-color: oklch(0.55 0.22 25) !important;
+  background: color-mix(in oklch, oklch(0.55 0.22 25) 15%, transparent) !important;
+}

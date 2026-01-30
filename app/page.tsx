@@ -12,7 +12,8 @@ import { StringVisualizer } from '@/components/StringVisualizer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Zap, BookOpen, Grid3x3, Brain, Type, ChevronRight } from 'lucide-react';
+import { Zap, BookOpen, Grid3x3, Brain, Type, ChevronRight, Briefcase } from 'lucide-react';
+import { InterviewMode } from '@/components/InterviewMode';
 
 import { createBubbleSort } from '@/lib/algorithms/sorting/bubbleSort';
 import { createMergeSort } from '@/lib/algorithms/sorting/mergeSort';
@@ -133,8 +134,13 @@ const algorithms: AlgorithmConfig[] = [
 function PageContent() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>(null);
   const [showHome, setShowHome] = useState(true);
+  const [showInterviewMode, setShowInterviewMode] = useState(false);
   const searchParams = useSearchParams();
   const categoryFilter = searchParams?.get('category');
+  const modeParam = searchParams?.get('mode');
+  React.useEffect(() => {
+    if (modeParam === 'interview') setShowInterviewMode(true);
+  }, [modeParam]);
 
   const selected = algorithms.find((a) => a.id === selectedAlgorithm);
 
@@ -191,6 +197,8 @@ function PageContent() {
         return (
           <SortingVisualizer
             algorithmName="Bubble Sort"
+            algorithmId="bubble-sort"
+            algorithmCategory="sorting"
             algorithmGenerator={(arr) => {
               const algo = createBubbleSort();
               algo.sort(arr);
@@ -203,6 +211,8 @@ function PageContent() {
         return (
           <SortingVisualizer
             algorithmName="Merge Sort"
+            algorithmId="merge-sort"
+            algorithmCategory="sorting"
             algorithmGenerator={(arr) => {
               const algo = createMergeSort();
               algo.sort(arr);
@@ -215,6 +225,8 @@ function PageContent() {
         return (
           <SortingVisualizer
             algorithmName="Heap Sort"
+            algorithmId="heap-sort"
+            algorithmCategory="sorting"
             algorithmGenerator={(arr) => {
               const algo = createHeapSort();
               algo.sort(arr);
@@ -323,6 +335,17 @@ function PageContent() {
         return null;
     }
   };
+
+  if (showInterviewMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <InterviewMode onBack={() => setShowInterviewMode(false)} />
+        </div>
+      </div>
+    );
+  }
 
   if (selectedAlgorithm && !showHome) {
     return (
@@ -495,6 +518,21 @@ function PageContent() {
               View All Algorithms <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Interview Prep CTA */}
+      <section className="py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          <Button
+            variant="outline"
+            size="lg"
+            className="gap-2 w-full sm:w-auto"
+            onClick={() => setShowInterviewMode(true)}
+          >
+            <Briefcase className="w-5 h-5" />
+            DSA for Interviews
+          </Button>
         </div>
       </section>
 
